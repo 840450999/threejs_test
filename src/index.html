@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script src="./threejs/three.js"></script>
+    <!-- 相机插件  阔以拖动变化视角 -->
+    <script src="./threejs/OrbitControls.js"></script>
+    <script>
+        // 创建一个文档中称作场景的对象  
+        // 之后添加的对象阔以放到这个场景中展示
+        var scene = new THREE.Scene();
+        
+        var width = window.innerWidth; //窗口宽度
+        var height = window.innerHeight; //窗口高度
+        var k = width / height; //窗口宽高比
+        var s = 150; //三维场景显示范围控制系数，系数越大，显示的范围越大
+
+        //创建相机对象  这个相机相当于初始看到东西的位置  有点像是本人的视角
+        var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        camera.position.set(10, 10, 400); //设置相机位置
+        camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+
+
+        /**
+         * 创建渲染器对象  这个阔以设置要渲染的区域尺寸以及渲染的着块区域透明之类的
+         */
+        var renderer = new THREE.WebGLRenderer(
+            { alpha: true }//设置背景透明
+        );
+        renderer.setSize(width, height);//设置渲染区域尺寸
+        // renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
+        document.body.appendChild(renderer.domElement); //body元素中插入canvas对象
+        //执行渲染操作   指定场景、相机作为参数
+
+
+
+        // 下面这一块是画出一个东西 先略过  之后会把各自文件夹中的index逻辑插入到这一块中画出图像
+        var [c, k, g, m] = [20, 5, 3, 5];
+
+        var material = new THREE.MeshPhongMaterial({
+            color: 'black',
+            specular: 'black',
+            shininess: 12
+        }); //材质对象Material
+
+
+        var yang = () => {
+            var geometry = new THREE.BoxGeometry(c, k, g); //创建一个立方体几何对象Geometry
+
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh      
+            var group = new THREE.Group();
+            group.add(mesh);
+
+            return group;
+        }
+        var taiyi = yang()
+        scene.add(taiyi);
+        // 略过结束
+
+        function render() {
+            renderer.render(scene, camera);//执行渲染操作
+        }
+        render();
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);//创建控件对象
+        controls.addEventListener('change', render);//监听鼠标、键盘事件
+
+    </script>
+
+    <script>
+        setInterval(() => {            
+            fetch("./startUpdate")
+            .then(async res=>{
+                if(JSON.parse( await res.text()).data)location =location              
+            })
+        }, 1000);        
+    </script>
+</body>
+
+</html>
